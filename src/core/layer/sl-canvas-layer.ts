@@ -1,0 +1,46 @@
+import { SlCanvasElement } from "../element/sl-canvas-element";
+import { SlCanvasEventName, SlCanvasEventDispatcher, SlCanvasEvent } from "../event/sl-canvas-event";
+import { SlCanvasStage } from "../sl-canvas";
+
+export abstract class SlCanvasLayer extends SlCanvasEvent {
+    stage: SlCanvasStage | null = null;
+    elements: SlCanvasElement[] = [];
+    zIndex: number = 0;
+    eventDispatcher: SlCanvasEventDispatcher = new SlCanvasEventDispatcher();
+    get context() {
+        return this.stage?.context;
+    }
+    constructor() {
+        super();
+    }
+    addTo(stage: SlCanvasStage) {
+        this.stage = stage;
+    }
+    remove() {
+        
+    }
+    addElement(element: SlCanvasElement) {
+        this.elements.push(element);    
+    }
+    initEvent() {
+        const dispatchName: SlCanvasEventName[] = ['ticker-update', 'destroy'];
+        dispatchName.forEach(name => {
+            this.eventDispatcher.on(name, (...args: any) => {
+                this.fire(name, ...args);
+            })
+        })
+    }
+    // 要是模拟dom渲染的话 根据css样式设置渲染优先级 先是父元素背景 边框 如果有overflowhidden 则裁剪 然后是子元素 内部需要处理滚动逻辑
+    // 这里就不模拟dom渲染了 直接渲染所有元素 然后根据zIndex排序 然后渲染
+    fire(name: SlCanvasEventName, ...args: any[]) {
+        this.elements.forEach(element => {
+            element.eventDispatcher.fire(name, ...args);
+        })
+    }
+    on(name: SlCanvasEventName, callback: Function): void {
+        this.eventDispatcher.on(name, callback);
+    }
+    off(name: SlCanvasEventName, callback?: Function): void {
+        this.eventDispatcher.off(name, callback);
+    } 
+}

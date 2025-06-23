@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",                // 编译目标ECMAScript版本
+    "module": "esnext",             // 模块系统
+    "declaration": true,               // 生成类型声明文件(.d.ts)
+    "outDir": "./dist",                // 编译输出目录
+    "rootDir": "src",              
+    "strict": true,                    // 启用严格类型检查
+    "esModuleInterop": true,           // 允许CommonJS和ES模块互操作
+    "skipLibCheck": true,              // 跳过库文件类型检查
+    "forceConsistentCasingInFileNames": true // 强制文件名大小写一致
+  },
+  "include": ["src/**/*"],            // 需要编译的文件
+  "exclude": ["node_modules", "**/*.test.ts"] // 排除文件
+}
