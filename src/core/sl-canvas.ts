@@ -61,7 +61,7 @@ export class SlCanvasStage extends SlCanvasEvent implements SlCanvasStageOption 
   on(name: SlCanvasEventName, ...args: any[]) {
     this.eventDispatcher.on(name, () => {
       this.layer.forEach((layer) => {
-        layer.eventDispatcher.fire(name, ...args);
+        layer.fire(name, ...args);
       });
     });
   }

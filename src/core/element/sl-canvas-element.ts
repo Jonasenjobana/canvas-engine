@@ -17,6 +17,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
   constructor(public option: SlCanvasElementOption = {}) {
     super();
     this.setOption(option);
+    this.initEvent();
   }
   get context() {
     return this.layer?.context || null;
@@ -37,7 +38,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
   children: SlCanvasElement[] = [];
   parent?: SlCanvasElement;
   eventDispatcher: SlCanvasEventDispatcher = new SlCanvasEventDispatcher();
-  tickerCb: Function = (time: number) => void 0;
+  protected tickerCb: Function = (time: number) => void 0;
   stopPropagation: boolean = false; // 停止事件传播，默认不停止;
   setGroupsElement(position: number[][]) { // 设置元素的属性
     // this.groupsElement = position; // 清空当前元素的子元素列表
@@ -57,6 +58,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
     }
     if (addInItem instanceof SlCanvasLayer) {
       this.layer = addInItem; // 保存引用到layer，方便后续操作layer的元素列表
+      this.layer.elements.push(this); // 将元素添加到layer的元素列表中
       addInItem.addElement(this);
     } else if (addInItem instanceof SlCanvasElement) { // 如果是元素且已经在其他layer中，先移除
       this.layer = addInItem.layer; // 保存引用到layer，方便后续操作layer的元素列表
@@ -71,6 +73,8 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
     if (this.parent) { // 如果有父元素，先从父元素的子元素列表中移除
       this.parent.children = this.parent.children.filter(child => child !== this); // 从父元素的子元素列表中移除
       return this;
+    } else {
+      this.layer.elements = this.layer.elements.filter(element => element!== this); // 从layer的元素列表中移除
     }
     const index = this.layer.elements.indexOf(this); // 获取当前元素在layer中的索引
     if (index !== -1) { // 如果找到了元素
@@ -84,6 +88,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
    */
   animeTicket(cb: (timeStamp: number) => void) {
     this.tickerCb = cb;
+    return this;
   }
   abstract render(): void;
   initEvent(): void {
@@ -101,9 +106,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
   off(name: SlCanvasEventName, callback?: Function): void {
     this.eventDispatcher.off(name, callback);
   }
-  fire(name: string, ...args: any[]): void {
-    this.children.forEach(child => {
-      child.fire(name,...args); // 递归调用子元素的fire方法
-    })
+  fire(name: SlCanvasEventName, ...args: any[]): void {
+    this.eventDispatcher.fire(name,...args); // 调用父类的fire方法
   }
 }

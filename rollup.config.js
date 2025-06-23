@@ -24,7 +24,7 @@ export default [
       nodeResolve(), // 解析第三方依赖
       commonjs(),    // 转换CommonJS为ES模块
       typescript(),  // 处理TypeScript
-      terser()       // 压缩代码（生产环境）
+      // terser()       // 压缩代码（生产环境）
     ]
   },
 ];

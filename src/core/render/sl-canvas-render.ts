@@ -5,7 +5,7 @@ export class SlCanvasRender {
   get ctx() {
     return this.stage.context;
   }
-  private readonly FPS_LIMIT: number = 60;
+  private readonly FPS_LIMIT: number = 10;
   // 动画控制状态
   private isRunning: boolean = false;
   private lastTime: number = 0;
@@ -17,7 +17,8 @@ export class SlCanvasRender {
     if (this.isRunning) return;
     this.isRunning = true;
     this.lastTime = performance.now();
-    this.ticker(performance.now());
+    // 直接请求下一帧，避免第一次 deltaTime 为 0
+    this.renderId = requestAnimationFrame((time) => this.ticker(time));
   }
   // 停止动画循环
   stop(): void {
@@ -26,21 +27,15 @@ export class SlCanvasRender {
   }
   ticker(currentTime: number) {
     if (!this.isRunning) return;
-
     // 计算时间差 (毫秒)
     this.deltaTime = currentTime - this.lastTime;
-    this.lastTime = currentTime;
-
     // 帧率控制
-    if (this.deltaTime < this.frameInterval) {
-      this.renderId = requestAnimationFrame((time) => this.ticker(time));
-      return;
+    if (this.lastTime == 0 || this.deltaTime >= this.frameInterval) {
+      this.lastTime = currentTime;
+      // 执行更新和渲染
+      this.update(this.deltaTime / 1000); // 转换为秒
     }
-
-    // 执行更新和渲染
-    this.update(this.deltaTime / 1000); // 转换为秒
-
-    // 请求下一帧
+    // 统一请求下一帧
     this.renderId = requestAnimationFrame((time) => this.ticker(time));
   }
 

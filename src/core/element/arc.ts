@@ -10,6 +10,7 @@ export interface SlCanvasArcOption extends SlCanvasElementOption {
 export class SlCanvasArc extends SlCanvasElement implements SlCanvasArcOption {
   constructor(option: SlCanvasArcOption) {
     super(option);
+    this.setOption(option);
   }
   radius: number = 0;
   startAngle: number = 0;
