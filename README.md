@@ -10,7 +10,12 @@ npm run test
 参考knova.js
 
 批处理相似元素
+- 减少ctx切换笔画属性次数
 脏检测渲染画布
+- 一个canvas 通过drawImage 绘制多个 可以减少绘制次数
+- rbush区域划分脏数据（turf）或许可以判断最小脏aabb盒然后清除对应区域的画布重绘
+webgl渲染
+- 通过gpu渲染以提高性能
 
 TODO
 1. 支持坐标系转化（坐标适配器)
