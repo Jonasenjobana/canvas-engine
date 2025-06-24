@@ -5,13 +5,14 @@ import {
   SlCanvasEvent,
 } from "../event/sl-canvas-event";
 import { SlCanvasStage } from "../sl-canvas";
-
+import RBush, { BBox } from 'rbush';
+import { SlBBox } from "../type";
 export class SlCanvasLayer extends SlCanvasEvent {
   stage: SlCanvasStage | null = null;
   elements: SlCanvasElement[] = [];
   zIndex: number = 0;
   eventDispatcher: SlCanvasEventDispatcher = new SlCanvasEventDispatcher();
-
+  rbush: RBush<SlBBox> = new RBush(); // 用于存储元素的 RBush 树
   get context() {
     return this.stage?.context;
   }

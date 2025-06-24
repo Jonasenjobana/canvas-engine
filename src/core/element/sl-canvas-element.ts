@@ -3,17 +3,13 @@ import { SlCanvasLayer } from "../layer/sl-canvas-layer";
 export interface SlCanvasElementOption {
   width?: number; // 元素宽度
   height?: number; // 元素高度
-  lat?: number; // 元素纬度
-  lng?: number; // 元素经度
   x?: number; // 元素x坐标
   y?: number; // 元素y坐标
   zIndex?: number; // 元素zIndex
-  relatePosition?: {
-    x?: number; // 元素x坐标相对于父元素的偏移量
-    y?: number; // 元素y坐标相对于父元素的偏移量
-  }
+  lat?: number; // 元素纬度
+  lng?: number; // 元素经度
 }
-export abstract class SlCanvasElement extends SlCanvasEvent {
+export abstract class SlCanvasElement extends SlCanvasEvent implements SlCanvasElementOption {
   constructor(public option: SlCanvasElementOption = {}) {
     super();
     this.setOption(option);
@@ -26,14 +22,11 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
   groupsElement: SlCanvasElement[] = [];
   width?: number;
   height?: number;
+  lat?: number;
+  lng?: number;
   x?: number;
   y?: number;
   zIndex?: number;
-  rotation?: number;
-  relatePosition?: {
-    x?: number; // 元素x坐标相对于父元素的偏移量
-    y?: number; // 元素y坐标相对于父元素的偏移量
-  }
   layer: SlCanvasLayer | null = null;
   children: SlCanvasElement[] = [];
   parent?: SlCanvasElement;
@@ -83,6 +76,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
     this.layer = null; // 清除对layer的引用  
     return this;
   }
+  abstract get aabb(): {minX: number, maxX: number, minY: number, maxY: number } | null; // aabb边界
   /**
    * 整体画布动画一帧触发一次
    */
@@ -90,14 +84,18 @@ export abstract class SlCanvasElement extends SlCanvasEvent {
     this.tickerCb = cb;
     return this;
   }
-  abstract render(): void;
+  updateCorrdinate() { // 更新元素的坐标
+    const that = this, {lat, lng} = that;  
+  }
+  abstract render(ctx: CanvasRenderingContext2D | null, childRender?: () => void): void;
   initEvent(): void {
     this.eventDispatcher.on('ticker-update', (time: number) => { // 监听ticker-update事件，触发render方法
-      this.render(); // 调用当前元素的render方法
+      this.render(this.context, () => {
+        this.children.forEach(child => {
+          child.fire('ticker-update', time); // 递归调用子元素的fire方法
+        })
+      }); // 调用当前元素的render方法
       this.tickerCb(time); // 调用tickerCb callbac
-      this.children.forEach(child => {
-        child.fire('ticker-update', time); // 递归调用子元素的fire方法
-      })
     })
   }
   on(name: SlCanvasEventName, callback: Function): void {

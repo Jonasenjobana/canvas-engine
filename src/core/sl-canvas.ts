@@ -9,7 +9,7 @@ export interface SlCanvasStageOption {
   center?: number[]; // 中心点 自定义坐标系统时需要设置
 }
 /**
- * canvas 舞台
+ * canvas 
  */
 export class SlCanvasStage extends SlCanvasEvent implements SlCanvasStageOption {
   constructor(private domEl: HTMLElement, public option?: SlCanvasStageOption) {
@@ -58,8 +58,8 @@ export class SlCanvasStage extends SlCanvasEvent implements SlCanvasStageOption 
       });
     }
   }
-  on(name: SlCanvasEventName, ...args: any[]) {
-    this.eventDispatcher.on(name, () => {
+  on(name: SlCanvasEventName) {
+    this.eventDispatcher.on(name, (...args: any) => {
       this.layer.forEach((layer) => {
         layer.fire(name, ...args);
       });

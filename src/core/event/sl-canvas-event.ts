@@ -61,7 +61,7 @@ export interface SlCanvasEventDetail {
   deltaZ: number; // 鼠标滚轮滚动距离
 }
 export abstract class SlCanvasEvent {
-  eventDispatcher: SlCanvasEventDispatcher = new SlCanvasEventDispatcher();
+  abstract eventDispatcher: SlCanvasEventDispatcher;
   preventDefault: boolean = false; // 阻止默认事件，默认不阻止;
   stopPropagation: boolean = false; // 停止事件传播，默认不停止
   abstract fire(name: SlCanvasEventName, ...args: any[]): void;

@@ -12,18 +12,21 @@ export class SlCanvasArc extends SlCanvasElement implements SlCanvasArcOption {
     super(option);
     this.setOption(option);
   }
+  get aabb(): { minX: number; maxX: number; minY: number; maxY: number; } | null {
+    if (this.x == undefined || this.y == undefined || !this.radius) return null; // 如果没有x或y坐标，返回null  
+    return { minX: this.x! - this.radius, maxX: this.x! + this.radius, minY: this.y! - this.radius, maxY: this.y! + this.radius};
+  }
   radius: number = 0;
   startAngle: number = 0;
   endAngle: number = Math.PI * 2;
   strokeStyle?: string | undefined;
   fillStyle?: string | undefined;
   lineWidth?: number | undefined;
-  render(context?: CanvasRenderingContext2D | null): void {
+  render(context: CanvasRenderingContext2D | null, childRender: () => void): void {
     context = context || this.context;
     if (context) {
       context.save();
       context.translate(this.x || 0, this.y || 0); // 移动到元素的位置
-      context.rotate(this.rotation || 0); // 旋转元素
       context.beginPath(); // 开始绘制路径
       context.arc(0, 0, this.radius, this.startAngle, this.endAngle); // 绘制圆形
       if (this.strokeStyle) { // 如果有边框颜色，绘制边框
