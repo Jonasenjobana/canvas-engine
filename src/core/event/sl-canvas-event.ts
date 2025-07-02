@@ -1,57 +1,16 @@
 export type SlCanvasEventName = "ticker-update" | "destroy" | "resize" | "mousedown" | "mousemove" | "mouseup" | "mousewheel";
-
-export interface MapAdapter {
-  /**
-   * 监听地图事件
-   */
-  on(eventName: string, handler: (event: any) => void): void;
-
-  /**
-   * 移除地图事件监听
-   */
-  off(eventName: string, handler: (event: any) => void): void;
-
-  /**
-   * 获取地图容器DOM元素
-   */
-  getContainer(): HTMLElement;
-
-  /**
-   * 销毁适配器
-   */
-  destroy(): void;
-  /**
-   * 新增：Canvas坐标转地图坐标
-   */
-  canvasToMap(point: { x: number; y: number }): { lat: number; lng: number };
-
-  /**
-   * 新增：地图坐标转Canvas坐标
-   */
-  mapToCanvas(point: { lat: number; lng: number }): { x: number; y: number };
-}
-/**
- * 默认空适配器（无地图时使用）
- */
-export class NullMapAdapter implements MapAdapter {
-  on(eventName: string, handler: (event: any) => void): void {}
-  off(eventName: string, handler: (event: any) => void): void {}
-  getContainer(): HTMLElement {
-    throw new Error("NullMapAdapter: No map container available");
+// 坐标系适配器
+export class CoordinateTransformAdapter {
+  constructor(private opt?: {
+    transformToCanvas: (x: number, y: number) => ({ x: number, y: number }), // 转换为canvas坐标
+    transformToOutside: (x: number, y: number) => ({ x: number, y: number }) // 转换为外部定义
+  }) {}
+  transformToCanvas(x: number, y: number): { x: number; y: number } { // 转换为canvas坐标
+    return this.opt?.transformToCanvas(x, y) || { x, y };
   }
-  canvasToMap(point: { x: number; y: number }): { lat: number; lng: number } {
-    return {
-      lat: point.y, // 无地图不变
-      lng: point.x, // 无地图不变
-    }; // 无地图不变
+  transformToOutside(x: number, y: number): { x: number; y: number } { // 转换为外部定义
+    return this.opt?.transformToOutside(x, y) || { x, y };
   }
-  mapToCanvas(point: { lat: number; lng: number }): { x: number; y: number } {
-    return {
-      x: point.lng, // 无地图不变
-      y: point.lat, // 无地图不变
-    }; // 无地图不变
-  }
-  destroy(): void {}
 }
 export interface SlCanvasEventDetail {
   x: number; // 鼠标x坐标

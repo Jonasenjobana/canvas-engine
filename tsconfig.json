@@ -4,7 +4,7 @@
     "module": "esnext",             // 模块系统
     "declaration": true,               // 生成类型声明文件(.d.ts)
     "outDir": "./dist",                // 编译输出目录
-    "rootDir": "src",              
+    "rootDir": "./",              
     "strict": true,                    // 启用严格类型检查
     "esModuleInterop": true,           // 允许CommonJS和ES模块互操作
     "skipLibCheck": true,              // 跳过库文件类型检查

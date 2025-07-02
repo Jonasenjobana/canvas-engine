@@ -16,7 +16,7 @@ export abstract class SlCanvasElement extends SlCanvasEvent implements SlCanvasE
     this.initEvent();
   }
   get context() {
-    return this.layer?.context || null;
+    return this.layer?.virtualCtx || null;
   }
   /**相同属性 位置不同 减少画笔切换性能开销 */
   groupsElement: SlCanvasElement[] = [];

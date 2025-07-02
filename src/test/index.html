@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    #wrap {
+        width: 100vw;
+        height: 99vh;
+        position: relative;
+    }
+    canvas {
+        width: 100%;
+        height: 100%;
+        background-color: aliceblue;
+    }
+</style>
+<body>
+    <div id="wrap">
+        <canvas id="canvas-container"></canvas>
+    </div>
+</body>
+<script type="module">
+import {CanvasMap} from './map/zoom.js';
+window.onload = () => {
+    let canvasMap = new CanvasMap('canvas-container');
+    canvasMap.render(); // 绘制地图
+}
+</script>
+</html>

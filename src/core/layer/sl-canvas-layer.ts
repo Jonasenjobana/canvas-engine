@@ -13,8 +13,31 @@ export class SlCanvasLayer extends SlCanvasEvent {
   zIndex: number = 0;
   eventDispatcher: SlCanvasEventDispatcher = new SlCanvasEventDispatcher();
   rbush: RBush<SlBBox> = new RBush(); // 用于存储元素的 RBush 树
-  get context() {
-    return this.stage?.context;
+  virtualCanvas: HTMLCanvasElement = document.createElement("canvas"); // 用于绘制元素的假画布
+  get virtualCtx() {
+    return this.virtualCanvas.getContext("2d", { willReadFrequently: true })!;
+  }
+  get virtualImageData() {
+    return this.virtualCtx.getImageData(0, 0, this.virtualCanvas.width, this.virtualCanvas.height);
+  }
+  isDirty: boolean = false; // 是否需要重新绘制
+  // 获取脏画布区域
+  /**
+   * 初始化假画布
+   */
+  initLayerCanvas() {
+    if (this.stage) {
+      const { width, height } = this.stage.domEl.getBoundingClientRect();
+      this.virtualCanvas.width = width;
+      this.virtualCanvas.height = height;
+      this.virtualCtx.clearRect(0, 0, width, height);
+    }
+  }
+  getDirtyArea() {
+
+  }
+  renderLayer(): ImageData {
+    return this.virtualCtx.getImageData(0, 0, this.virtualCanvas.width, this.virtualCanvas.height);
   }
   constructor() {
     super();
@@ -23,6 +46,7 @@ export class SlCanvasLayer extends SlCanvasEvent {
   addTo(stage: SlCanvasStage) {
     this.stage = stage;
     stage.layer.push(this);
+    this.initLayerCanvas();
     return this;
   }
   remove() {
